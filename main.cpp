@@ -13,6 +13,7 @@ typedef struct{
     float y;
     float transx;
     float transy;
+    int teste;
 } Objeto;
 
 vector<Objeto*> objetos;
