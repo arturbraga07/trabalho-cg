@@ -18,7 +18,6 @@ typedef struct{
 
 vector<Objeto*> objetos;
 
-
 void mouse(int button, int state, int mousex, int mousey)
 {
 
@@ -79,8 +78,7 @@ void tecladoSpecial(int key, int x, int y){
                     if((objetos[selectedObj]->x - 50 == objetos[i]->x) && (objetos[selectedObj]->y == objetos[i]->y)){
                         break;
                     }else{
-                        desenhaCirculo(objetos[selectedObj]->x,objetos[selectedObj]->y,0,-50,0);
-
+                         objetos[selectedObj]->x -= 50;
                     }
                 }
 
@@ -96,8 +94,6 @@ void tecladoSpecial(int key, int x, int y){
                     if((objetos[selectedObj]->x + 50 == objetos[i]->x) && (objetos[selectedObj]->y == objetos[i]->y)){
                         break;
                     }else{
-                        glTranslatef(-50,0,1);
-
                         objetos[selectedObj]->x += 50;
                     }
                 }
