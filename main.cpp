@@ -7,9 +7,12 @@ using namespace std;
 
 int qtdObjects = 1;
 int selectedObj = 25;
+
 typedef struct{
     float x;
     float y;
+    float transx;
+    float transy;
 } Objeto;
 
 vector<Objeto*> objetos;
@@ -21,15 +24,7 @@ void mouse(int button, int state, int mousex, int mousey)
     int coord_x = mousex;
     int coord_y = 400 - mousey;
     if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
-        printf("%d\n", (int)objetos.size());
-        printf("%d\n", coord_x);
-        printf("%d\n", coord_y);
-        printf("%f\n", objetos[1]->x);
-        printf("%f\n", objetos[1]->y);
         for (int i = 0; i < (int)objetos.size(); i++) {
-            printf((coord_x+25>=objetos[i]->x&&coord_x-25<=objetos[i]->x) ? "true" : "false");
-            printf((coord_y+25>=objetos[i]->y&&coord_y-25<=objetos[i]->y) ? "true" : "false");
-            printf((coord_x+25>=objetos[i]->x&&coord_x-25<=objetos[i]->x)&&(coord_y+25>=objetos[i]->y&&coord_y-25<=objetos[i]->y) ? "true" : "false");
             if((coord_x+25>=objetos[i]->x&&coord_x-25<=objetos[i]->x)&&(coord_y+25>=objetos[i]->y&&coord_y-25<=objetos[i]->y)){
                 selectedObj = i;
             }
@@ -37,7 +32,43 @@ void mouse(int button, int state, int mousex, int mousey)
     }
     glutPostRedisplay();
 }
+void desenhaCirculo(int x, int y, int cor = 3, float transx = 0.0, float transy = 0.0){
 
+    switch (cor) {
+    case 0:
+        glColor3f(1.0,0.0,0.0);
+        break;
+    case 1 :
+        glColor3f(0.0,1.0,0.0);
+        break;
+    case 2:
+        glColor3f(0.0,0.0,1.0);
+        break;
+    case 3:
+        glColor3f(0.8,0.3,0.7);
+        break;
+    default:
+        glColor3f(0.8,0.3,0.1);
+        break;
+    }
+
+    float radius = 15.0;
+    int qtdTriangulos = 20;
+    GLfloat dobroPi = 2.0f * M_PI;
+    glTranslatef(transx,transy,0);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(x, y);
+    for(int i = 0; i <= qtdTriangulos;i++) {
+        glVertex2f(
+                    x + (radius * cos(i *  dobroPi / qtdTriangulos)),
+                    y + (radius * sin(i * dobroPi / qtdTriangulos))
+                    );
+    }
+    glEnd();
+    glFlush();
+
+
+}
 void tecladoSpecial(int key, int x, int y){
     switch(key){
     case GLUT_KEY_LEFT:
@@ -47,7 +78,8 @@ void tecladoSpecial(int key, int x, int y){
                     if((objetos[selectedObj]->x - 50 == objetos[i]->x) && (objetos[selectedObj]->y == objetos[i]->y)){
                         break;
                     }else{
-                        objetos[selectedObj]->x -= 50;
+                        desenhaCirculo(objetos[selectedObj]->x,objetos[selectedObj]->y,0,-50,0);
+
                     }
                 }
 
@@ -108,40 +140,7 @@ void tecladoSpecial(int key, int x, int y){
     }
     glutPostRedisplay();
 }
-void desenhaCirculo(int x, int y, int cor = 3){
 
-    switch (cor) {
-    case 0:
-        glColor3f(1.0,0.0,0.0);
-        break;
-    case 1 :
-        glColor3f(0.0,1.0,0.0);
-        break;
-    case 2:
-        glColor3f(0.0,0.0,1.0);
-        break;
-    case 3:
-        glColor3f(0.8,0.3,0.7);
-        break;
-    default:
-        glColor3f(0.8,0.3,0.1);
-        break;
-    }
-
-    float radius = 15.0;
-    int qtdTriangulos = 20;
-    GLfloat dobroPi = 2.0f * M_PI;
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex2f(x, y);
-    for(int i = 0; i <= qtdTriangulos;i++) {
-        glVertex2f(
-                    x + (radius * cos(i *  dobroPi / qtdTriangulos)),
-                    y + (radius * sin(i * dobroPi / qtdTriangulos))
-                    );
-    }
-    glEnd();
-
-}
 void desenhaQuadrado(int x, int y){
     glBegin(GL_QUADS);
     glVertex2i(x, y);
@@ -180,13 +179,7 @@ void myDisplay(void)
 
     }
 
-    /*glColor3f(1.0,0.0,0.0);
-    glBegin(GL_QUADS);
-    glVertex2i(0, 0);
-    glVertex2i(50, 0);
-    glVertex2i(50, -50);
-    glVertex2i(0, -50);
-    glEnd();*/
+    glFlush();
     desenhaCirculo(objetos[0]->x,objetos[0]->y);
     desenhaCirculo(objetos[1]->x,objetos[1]->y,0);
     glFlush();
@@ -200,10 +193,14 @@ void myInit(void)
     Objeto *camera = new Objeto;
     camera->x = 25;
     camera->y = 375;
+    camera->transx = 0;
+    camera->transy = 0;
     objetos.push_back(camera);
     Objeto *objInicial = new Objeto;
     objInicial->x = 325;
     objInicial->y = 225;
+    objInicial->transx = 0;
+    objInicial->transy = 0;
     objetos.push_back(objInicial);
 }
 
