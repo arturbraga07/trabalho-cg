@@ -5,34 +5,33 @@
 #include <vector>
 using namespace std;
 
-int qtdObjects = 1;
+int qtdObjects = 2;
 int selectedObj = 25;
-
+int trys = 0;
+int suc;
 typedef struct{
-    float x;
-    float y;
-    float transx;
-    float transy;
-    int teste;
+    int x;
+    int y;
+    int transx;
+    int transy;
 } Objeto;
 
 vector<Objeto*> objetos;
-
-void mouse(int button, int state, int mousex, int mousey)
+void myInit(void)
 {
+    glClearColor(1.0, 1.0, 1.0, 1.0);
 
-    int coord_x = mousex;
-    int coord_y = 400 - mousey;
-    if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
-        for (int i = 0; i < (int)objetos.size(); i++) {
-            if((coord_x+25>=objetos[i]->x&&coord_x-25<=objetos[i]->x)&&(coord_y+25>=objetos[i]->y&&coord_y-25<=objetos[i]->y)){
-                selectedObj = i;
-            }
-        }
-    }
-    glutPostRedisplay();
 }
-void desenhaCirculo(int x, int y, int cor = 3, float transx = 0.0, float transy = 0.0){
+
+void desenhaQuadrado(int x, int y){
+    glBegin(GL_QUADS);
+    glVertex2i(x, y);
+    glVertex2i(x, y + 50);
+    glVertex2i(x + 50, y + 50);
+    glVertex2i(x + 50, y);
+    glEnd();
+}
+void desenhaCirculo(int x, int y,int transx, int transy, int cor = 3 ){
 
     switch (cor) {
     case 0:
@@ -55,6 +54,7 @@ void desenhaCirculo(int x, int y, int cor = 3, float transx = 0.0, float transy 
     float radius = 15.0;
     int qtdTriangulos = 20;
     GLfloat dobroPi = 2.0f * M_PI;
+    glPushMatrix();
     glTranslatef(transx,transy,0);
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(x, y);
@@ -65,20 +65,36 @@ void desenhaCirculo(int x, int y, int cor = 3, float transx = 0.0, float transy 
                     );
     }
     glEnd();
+    glPopMatrix();
     glFlush();
 
 
 }
+void mouse(int button, int state, int mousex, int mousey)
+{
+    int coord_x = mousex;
+    int coord_y = 400 - mousey;
+    if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
+        for (int i = 0; i < qtdObjects; i++) {
+            if((coord_x+25>=objetos[i]->x&&coord_x-25<=objetos[i]->x)&&(coord_y+25>=objetos[i]->y&&coord_y-25<=objetos[i]->y)){
+                selectedObj = i;
+            }
+        }
+    }
+}
+
 void tecladoSpecial(int key, int x, int y){
     switch(key){
     case GLUT_KEY_LEFT:
         if(objetos[selectedObj]->x != 25){
-            for (int i = 0; i < (int)objetos.size(); i++) {
+            for (int i = 0; i < qtdObjects; i++) {
                 if(i != selectedObj){
                     if((objetos[selectedObj]->x - 50 == objetos[i]->x) && (objetos[selectedObj]->y == objetos[i]->y)){
                         break;
                     }else{
-                         objetos[selectedObj]->x -= 50;
+                        printf("%d \n",objetos[selectedObj]->x);
+                        objetos[selectedObj]->transx -= 50;
+                        //objetos[selectedObj]->x -=50;
                     }
                 }
 
@@ -89,12 +105,14 @@ void tecladoSpecial(int key, int x, int y){
     case GLUT_KEY_RIGHT:
         if(objetos[selectedObj]->x != 375){
 
-            for (int i = 0; i < objetos.size(); i++) {
+            for (int i = 0; i < qtdObjects; i++) {
                 if(i != selectedObj){
                     if((objetos[selectedObj]->x + 50 == objetos[i]->x) && (objetos[selectedObj]->y == objetos[i]->y)){
                         break;
                     }else{
-                        objetos[selectedObj]->x += 50;
+                        objetos[selectedObj]->transx += 50;
+                        //objetos[selectedObj]->x +=50;
+
                     }
                 }
 
@@ -105,12 +123,15 @@ void tecladoSpecial(int key, int x, int y){
     case GLUT_KEY_DOWN:
         if(objetos[selectedObj]->y != 25){
 
-            for (int i = 0; i < (int)objetos.size(); i++) {
+            for (int i = 0; i < qtdObjects; i++) {
                 if(i != selectedObj){
                     if((objetos[selectedObj]->y - 50 == objetos[i]->y) && (objetos[selectedObj]->x == objetos[i]->x)){
                         break;
                     }else{
-                        objetos[selectedObj]->y -= 50;
+                        objetos[selectedObj]->transy -= 50;
+                        //objetos[selectedObj]->y -=50;
+
+
                     }
                 }
 
@@ -121,12 +142,14 @@ void tecladoSpecial(int key, int x, int y){
     case GLUT_KEY_UP:
         if(objetos[selectedObj]->y != 375){
 
-            for (int i = 0; i < (int)objetos.size(); i++) {
+            for (int i = 0; i < qtdObjects; i++) {
                 if(i != selectedObj){
                     if((objetos[selectedObj]->y + 50 == objetos[i]->y) && (objetos[selectedObj]->x == objetos[i]->x)){
                         break;
                     }else{
-                        objetos[selectedObj]->y += 50;
+                        objetos[selectedObj]->transy += 50;
+                        //objetos[selectedObj]->y +=50;
+
                     }
                 }
 
@@ -138,14 +161,7 @@ void tecladoSpecial(int key, int x, int y){
     glutPostRedisplay();
 }
 
-void desenhaQuadrado(int x, int y){
-    glBegin(GL_QUADS);
-    glVertex2i(x, y);
-    glVertex2i(x, y + 50);
-    glVertex2i(x + 50, y + 50);
-    glVertex2i(x + 50, y);
-    glEnd();
-}
+
 void myDisplay(void)
 {
     bool isBlack = false;
@@ -175,18 +191,14 @@ void myDisplay(void)
         }
 
     }
-
     glFlush();
-    desenhaCirculo(objetos[0]->x,objetos[0]->y);
-    desenhaCirculo(objetos[1]->x,objetos[1]->y,0);
-    glFlush();
-
+    desenhaCirculo(objetos[0]->x,objetos[0]->y,objetos[0]->transx,objetos[0]->transy,3);
+    desenhaCirculo(objetos[1]->x,objetos[1]->y,objetos[1]->transx,objetos[1]->transy,0);
 }
 
 
-void myInit(void)
+int main(int argc, char** argv)
 {
-    glClearColor(1.0, 1.0, 1.0, 1.0);
     Objeto *camera = new Objeto;
     camera->x = 25;
     camera->y = 375;
@@ -199,10 +211,6 @@ void myInit(void)
     objInicial->transx = 0;
     objInicial->transy = 0;
     objetos.push_back(objInicial);
-}
-
-int main(int argc, char** argv)
-{
     glutInit(&argc,argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowPosition(200,200);
